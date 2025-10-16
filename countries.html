@@ -1,0 +1,121 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Destinations | Study Worldwide Solution</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Study Worldwide Solution</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="countries.html" class="active">Countries</a></li>
+          <li><a href="tests.html">Tests</a></li>
+          <li><a href="team.html">Team</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <h2>Study Destinations</h2>
+      <p>Explore top global education hubs for your dream career</p>
+    </div>
+  </section>
+
+  <section class="countries-page">
+    <div class="container">
+      <div class="country-grid">
+        <div class="country-card">
+          <img src="https://flagcdn.com/w320/au.png" alt="Australia Flag">
+          <h3>Australia</h3>
+          <p>Known for world-class universities, diverse culture, and post-study work opportunities, Australia remains a top destination for Nepali students seeking quality education and a vibrant lifestyle.</p>
+        </div>
+
+        <div class="country-card">
+          <img src="https://flagcdn.com/w320/gb.png" alt="UK Flag">
+          <h3>United Kingdom</h3>
+          <p>Home to some of the oldest and most prestigious universities, the UK offers globally recognized degrees and a multicultural academic environment.</p>
+        </div>
+
+        <div class="country-card">
+          <img src="https://flagcdn.com/w320/jp.png" alt="Japan Flag">
+          <h3>Japan</h3>
+          <p>Combining cutting-edge innovation with rich cultural heritage, Japan offers outstanding opportunities for students in technology, engineering, and language studies.</p>
+        </div>
+
+        <div class="country-card">
+          <img src="https://flagcdn.com/w320/nz.png" alt="New Zealand Flag">
+          <h3>New Zealand</h3>
+          <p>With its focus on research-driven education and safe environment, New Zealand provides a perfect blend of quality learning and natural beauty.</p>
+        </div>
+
+        <div class="country-card">
+          <img src="https://flagcdn.com/w320/ca.png" alt="Canada Flag">
+          <h3>Canada</h3>
+          <p>Famous for high-quality education and welcoming immigration policies, Canada is an ideal destination for students looking for both academic and career success.</p>
+        </div>
+
+        <div class="country-card">
+          <img src="https://flagcdn.com/w320/us.png" alt="USA Flag">
+          <h3>United States</h3>
+          <p>The USA hosts many of the world’s top-ranked universities, offering a wide range of programs and research opportunities across every discipline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2025 Study Worldwide Solution. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

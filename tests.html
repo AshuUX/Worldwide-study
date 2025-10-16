@@ -1,0 +1,127 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Preparation | Study Worldwide Solution</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Study Worldwide Solution</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="countries.html">Countries</a></li>
+          <li><a href="tests.html" class="active">Tests</a></li>
+          <li><a href="team.html">Team</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <h2>Test Preparation</h2>
+      <p>Helping you achieve the scores that open global opportunities</p>
+    </div>
+  </section>
+
+  <section class="tests-page">
+    <div class="container">
+      <div class="test-grid">
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="IELTS">
+          <h3>IELTS</h3>
+          <p>Our experienced instructors guide you through all four modules — Listening, Reading, Writing, and Speaking — with mock tests and personalized feedback.</p>
+        </div>
+
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="TOEFL">
+          <h3>TOEFL</h3>
+          <p>Master academic English skills for U.S. and international universities with practical strategies and adaptive learning resources.</p>
+        </div>
+
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="PTE">
+          <h3>PTE</h3>
+          <p>Our PTE sessions combine interactive software practice with expert review to help you perform confidently in all sections.</p>
+        </div>
+
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="SAT">
+          <h3>SAT</h3>
+          <p>Structured programs focused on reading, writing, and math — designed to boost your analytical and problem-solving skills for U.S. college admissions.</p>
+        </div>
+
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="GRE">
+          <h3>GRE</h3>
+          <p>We help you build strong reasoning and quantitative skills with topic-wise practice, mock exams, and individual mentoring.</p>
+        </div>
+
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="GMAT">
+          <h3>GMAT</h3>
+          <p>For future business leaders — we provide targeted GMAT prep sessions focusing on data interpretation, logic, and time management.</p>
+        </div>
+
+        <div class="test-card">
+          <img src="https://via.placeholder.com/300x200" alt="Japanese Language">
+          <h3>Japanese Language</h3>
+          <p>Prepare for Japanese Language Proficiency Tests (JLPT) with native guidance, cultural immersion, and real-world communication practice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2025 Study Worldwide Solution. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
