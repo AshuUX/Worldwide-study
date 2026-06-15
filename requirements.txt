@@ -1,0 +1,17 @@
+mesa==2.3.0
+pandas==2.2.0
+numpy==1.26.4
+scipy==1.13.0
+matplotlib==3.8.0
+plotly==5.20.0
+streamlit==1.33.0
+requests==2.31.0
+cdsapi==0.7.0
+timesfm==1.0.0
+reportlab==4.1.0
+pytest==8.1.0
+scikit-learn==1.4.0
+xarray==2024.3.0
+openpyxl==3.1.2
+beautifulsoup4==4.12.3
+netCDF4==1.6.5

@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*$py.class
+data/raw/
+data/clean/
+.pytest_cache/
+*.nc
