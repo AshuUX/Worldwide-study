@@ -35,7 +35,10 @@ def generate_mock_snowpack_data(year_start, year_end, output_path):
     df.to_csv(output_path, index=False)
     return df
 
-if __name__ == "__main__":
+def main():
     os.makedirs(RAW_DATA_DIR, exist_ok=True)
     fetch_ceaza_snowpack()
     print(f"Snowpack data saved to {os.path.join(RAW_DATA_DIR, 'snowpack_maule.csv')}")
+
+if __name__ == "__main__":
+    main()

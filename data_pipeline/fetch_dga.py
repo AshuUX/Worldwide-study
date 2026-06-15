@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 import logging
+import io
 
 # Configuration
 DGA_STATION = "07337002-K"
@@ -35,7 +36,7 @@ def fetch_dga_monthly(station_code, year_start=1960, year_end=2024):
         # Parse response CSV
         # Assuming the CSV has 'date' and 'flow_m3s' after some cleaning
         # For the sake of the platform, we'll try to parse it if it looks like a CSV
-        df = pd.read_csv(pd.compat.StringIO(r.text))
+        df = pd.read_csv(io.StringIO(r.text))
         # ... cleaning logic would go here depending on actual DGA CSV format ...
 
     except Exception as e:
@@ -77,8 +78,11 @@ def generate_mock_dga_data(station_code, year_start, year_end):
     })
     return df
 
-if __name__ == "__main__":
+def main():
     df = fetch_dga_monthly(DGA_STATION)
     output_path = os.path.join(RAW_DATA_DIR, "dga_discharge.csv")
     df.to_csv(output_path, index=False)
     print(f"DGA data saved to {output_path}")
+
+if __name__ == "__main__":
+    main()

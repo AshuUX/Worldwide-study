@@ -50,7 +50,10 @@ def generate_mock_cne_data(year_start, year_end, output_path):
     df.to_csv(output_path, index=False)
     return df
 
-if __name__ == "__main__":
+def main():
     os.makedirs(RAW_DATA_DIR, exist_ok=True)
     fetch_cne_generation()
     print(f"CNE data saved to {os.path.join(RAW_DATA_DIR, 'cne_generation.csv')}")
+
+if __name__ == "__main__":
+    main()

@@ -83,5 +83,8 @@ def clean_data():
     master.to_csv(os.path.join(CLEAN_DATA_DIR, "maule_master.csv"), index=False)
     logging.info("Master clean data saved.")
 
-if __name__ == "__main__":
+def main():
     clean_data()
+
+if __name__ == "__main__":
+    main()

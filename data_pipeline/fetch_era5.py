@@ -78,7 +78,10 @@ def generate_mock_era5_data(year_start, year_end, output_path):
     df.to_csv(output_path, index=False)
     return df
 
-if __name__ == "__main__":
+def main():
     os.makedirs(RAW_DATA_DIR, exist_ok=True)
     fetch_era5_maule()
     print(f"ERA5 data saved to {os.path.join(RAW_DATA_DIR, 'era5_maule.csv')}")
+
+if __name__ == "__main__":
+    main()

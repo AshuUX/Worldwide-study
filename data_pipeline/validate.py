@@ -72,5 +72,8 @@ def validate_completeness():
         if completeness_results["precip_mm"][i] < 95:
              raise Exception(f"CRITICAL: ERA5 coverage in {start}s too low.")
 
-if __name__ == "__main__":
+def main():
     validate_completeness()
+
+if __name__ == "__main__":
+    main()

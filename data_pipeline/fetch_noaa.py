@@ -84,7 +84,7 @@ def generate_mock_noaa_data(col_name):
 
     return pd.DataFrame({"date": dates, col_name: vals})
 
-if __name__ == "__main__":
+def main():
     os.makedirs(RAW_DATA_DIR, exist_ok=True)
 
     mei = parse_noaa_table("https://psl.noaa.gov/enso/mei/data/meiv2.data", "enso_mei")
@@ -108,3 +108,6 @@ if __name__ == "__main__":
     output_path = os.path.join(RAW_DATA_DIR, "climate_indices.csv")
     indices.to_csv(output_path, index=False)
     print(f"Climate indices saved to {output_path}")
+
+if __name__ == "__main__":
+    main()
