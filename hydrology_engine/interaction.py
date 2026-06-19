@@ -34,8 +34,13 @@ def apply_interactions(agent_outputs: dict, year: int, month: int) -> dict:
     precip_runoff_m3s *= aao_mult
 
     # Combine all contributions
-    total_base_flow_m3s = snowmelt_m3s_adjusted + glacier_m3s + precip_runoff_m3s
+    baseflow_m3s = agent_outputs["baseflow"]["contribution_m3s"]
+    total_base_flow_m3s = snowmelt_m3s_adjusted + glacier_m3s + precip_runoff_m3s + baseflow_m3s
     total_flow_m3s = total_base_flow_m3s * combined_climate_mult
+
+    # Rule 6: Reservoir dampening
+    dampening = agent_outputs["reservoir"].get("flow_dampening", 1.0)
+    total_flow_m3s *= dampening
 
     return {
         "total_flow_m3s": max(0.0, total_flow_m3s),

@@ -13,9 +13,11 @@ class PrecipAnomalyAgent(HydrologyAgent):
         if pd.isna(precip):
             precip = 0
 
+        # BUG FIX: Precip contrib should be MUCH smaller than basin-wide area multiplication
+        # because most precip doesn't run off immediately.
+        # Let's apply a baseline 0.1 scaling if not handled by interaction.
         days = pd.Timestamp(year=year, month=month, day=1).days_in_month
-        # Convert mm to m3s
-        contribution_m3s = (precip / 1000 * self.basin_area_m2) / (days * 86400)
+        contribution_m3s = (precip / 1000 * self.basin_area_m2 * 0.1) / (days * 86400)
 
         return {
             "contribution_m3s": contribution_m3s,
