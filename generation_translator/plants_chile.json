@@ -1,0 +1,68 @@
+{
+  "plants": [
+    {
+      "name": "Colbun",
+      "basin": "maule",
+      "type": "storage",
+      "capacity_mw": 400,
+      "head_m": 160,
+      "design_flow_m3s": 290,
+      "efficiency": 0.88,
+      "min_flow_m3s": 15,
+      "max_flow_m3s": 290,
+      "reservoir_gwh": 1200,
+      "cne_plant_code": "COL",
+      "lat": -35.68,
+      "lon": -71.03,
+      "historical_mean_annual_gwh": 1800
+    },
+    {
+      "name": "Machicura",
+      "basin": "maule",
+      "type": "run_of_river",
+      "capacity_mw": 90,
+      "head_m": 38,
+      "design_flow_m3s": 270,
+      "efficiency": 0.86,
+      "min_flow_m3s": 20,
+      "max_flow_m3s": 270,
+      "reservoir_gwh": 0,
+      "cne_plant_code": "MAC",
+      "lat": -35.72,
+      "lon": -71.18,
+      "historical_mean_annual_gwh": 400
+    },
+    {
+      "name": "Isla",
+      "basin": "maule",
+      "type": "run_of_river",
+      "capacity_mw": 68,
+      "head_m": 120,
+      "design_flow_m3s": 65,
+      "efficiency": 0.88,
+      "min_flow_m3s": 5,
+      "max_flow_m3s": 65,
+      "reservoir_gwh": 0,
+      "cne_plant_code": "ISL",
+      "lat": -35.65,
+      "lon": -70.80,
+      "historical_mean_annual_gwh": 300
+    },
+    {
+      "name": "San Ignacio",
+      "basin": "maule",
+      "type": "run_of_river",
+      "capacity_mw": 40,
+      "head_m": 35,
+      "design_flow_m3s": 130,
+      "efficiency": 0.85,
+      "min_flow_m3s": 10,
+      "max_flow_m3s": 130,
+      "reservoir_gwh": 0,
+      "cne_plant_code": "SIG",
+      "lat": -35.75,
+      "lon": -71.20,
+      "historical_mean_annual_gwh": 180
+    }
+  ]
+}
