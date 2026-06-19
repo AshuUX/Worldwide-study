@@ -35,8 +35,12 @@ def apply_interactions(agent_outputs: dict, year: int, month: int) -> dict:
 
     # Combine all contributions
     baseflow_m3s = agent_outputs["baseflow"]["contribution_m3s"]
-    total_base_flow_m3s = snowmelt_m3s_adjusted + glacier_m3s + precip_runoff_m3s + baseflow_m3s
-    total_flow_m3s = total_base_flow_m3s * combined_climate_mult
+
+    # NEW — multiplier applied only to snowmelt and glacier, not precip-runoff or baseflow
+    snowmelt_and_glacier = snowmelt_m3s_adjusted + glacier_m3s
+    climate_adjusted = snowmelt_and_glacier * combined_climate_mult
+
+    total_flow_m3s = climate_adjusted + precip_runoff_m3s + baseflow_m3s
 
     # Rule 6: Reservoir dampening
     dampening = agent_outputs["reservoir"].get("flow_dampening", 1.0)
@@ -49,5 +53,6 @@ def apply_interactions(agent_outputs: dict, year: int, month: int) -> dict:
             "snowmelt": snowmelt_m3s_adjusted,
             "glacier": glacier_m3s,
             "precip_runoff": precip_runoff_m3s,
+            "baseflow": baseflow_m3s,
         }
     }

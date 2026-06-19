@@ -81,3 +81,9 @@ def test_2021_drought_captured(data):
             captured_count += 1
 
     assert captured_count >= 0 # Just verify it runs
+
+def test_scs_cn_formula_correct():
+    from hydrology_engine.agents.soil_moisture import compute_runoff
+    runoff_mm, runoff_fraction = compute_runoff(precip_mm=80, CN=80)
+    assert 30 < runoff_mm < 40, f"Expected ~34.7mm, got {runoff_mm}"
+    assert 0.35 < runoff_fraction < 0.50, f"Expected ~0.43, got {runoff_fraction}"

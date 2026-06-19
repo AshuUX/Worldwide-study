@@ -2,6 +2,18 @@ import numpy as np
 import pandas as pd
 from .base import HydrologyAgent
 
+def compute_runoff(precip_mm: float, CN: float) -> tuple[float, float]:
+    """
+    Returns (runoff_mm, runoff_fraction) using the real SCS curve number method.
+    """
+    S = (25400 / CN) - 254  # potential maximum retention, mm
+    if precip_mm > 0.2 * S:
+        runoff_mm = (precip_mm - 0.2 * S) ** 2 / (precip_mm + 0.8 * S)
+    else:
+        runoff_mm = 0.0
+    runoff_fraction = runoff_mm / precip_mm if precip_mm > 0 else 0.0
+    return runoff_mm, runoff_fraction
+
 class SoilMoistureAgent(HydrologyAgent):
     def __init__(self, data, basin):
         super().__init__(data, basin)
@@ -50,11 +62,9 @@ class SoilMoistureAgent(HydrologyAgent):
 
         base_CN = self.CN[amc]
         CN = self._cn_for_elevation(base_CN, elevation_m)
-        S = (25400 / CN) - 254
-        # Adjust runoff fraction calculation:
-        # Use more direct infiltration proxy if needed
-        # (Overriding the standard SCS-CN formula to better match expected swarm interaction)
-        runoff_fraction = (CN / 100) ** 2
+
+        # Restore real SCS-CN formula
+        runoff_mm, runoff_fraction = compute_runoff(precip, CN)
 
         self._cached_result = {
             "runoff_fraction": runoff_fraction,
