@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 def build_flow_distribution(year: int, month: int, agents: list,
-                             interaction_fn, n_samples: int = 1000) -> dict:
+                             interaction_fn, n_samples: int = 100) -> dict:
     samples = []
 
     for _ in range(n_samples):

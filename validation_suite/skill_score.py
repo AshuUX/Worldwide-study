@@ -2,71 +2,85 @@ import pandas as pd
 import numpy as np
 from hydrology_engine.runner import HydrologyRunner
 from hydrology_engine.baseline import compute_baseline
+import json
+
+def compute_metrics(actuals, predictions, baseline_preds):
+    rmse_swarm = np.sqrt(np.mean((predictions - actuals) ** 2))
+    rmse_baseline = np.sqrt(np.mean((baseline_preds - actuals) ** 2))
+    skill_score = (1 - rmse_swarm / (rmse_baseline + 1e-9)) * 100
+    return rmse_baseline, rmse_swarm, skill_score
 
 def compute_skill_score():
     data = pd.read_csv("data/clean/maule_master.csv", parse_dates=["date"])
     baseline = compute_baseline(data)
     runner = HydrologyRunner()
 
-    # evaluate on period with real data
-    holdout = data[(data["date"] >= "2019-04-01") & (data["date"] <= "2022-12-01")].copy()
+    # Define periods
+    train_mask = (data["date"] >= "2019-04-01") & (data["date"] <= "2021-12-01")
+    test_mask = (data["date"] >= "2022-01-01") & (data["date"] <= "2022-12-01")
 
-    baseline_errors = []
-    swarm_errors = []
+    train_data = data[train_mask].copy()
+    test_data = data[test_mask].copy()
 
-    # Track seasonal errors for bias reporting
-    seasonal_data = {
-        "Spring": {"actual": [], "swarm": []}, # Sep, Oct, Nov
-        "Summer": {"actual": [], "swarm": []}, # Dec, Jan, Feb
-        "Autumn": {"actual": [], "swarm": []}, # Mar, Apr, May
-        "Winter": {"actual": [], "swarm": []}  # Jun, Jul, Aug
-    }
+    results = {}
 
-    def get_season(month):
-        if month in [9, 10, 11]: return "Spring"
-        if month in [12, 1, 2]: return "Summer"
-        if month in [3, 4, 5]: return "Autumn"
-        return "Winter"
+    for period_name, period_df in [("TRAIN", train_data), ("TEST", test_data)]:
+        actuals = []
+        swarm_preds = []
+        baseline_preds = []
+        seasonal_data = {
+            "Spring": {"actual": [], "swarm": []},
+            "Summer": {"actual": [], "swarm": []},
+            "Autumn": {"actual": [], "swarm": []},
+            "Winter": {"actual": [], "swarm": []}
+        }
 
-    for _, row in holdout.iterrows():
-        year, month = row["date"].year, row["date"].month
-        actual = row["flow_m3s"]
-        if pd.isna(actual): continue
+        def get_season(month):
+            if month in [9, 10, 11]: return "Spring"
+            if month in [12, 1, 2]: return "Summer"
+            if month in [3, 4, 5]: return "Autumn"
+            return "Winter"
 
-        baseline_pred = baseline[baseline["month"] == month]["mean_m3s"].iloc[0]
-        baseline_errors.append((baseline_pred - actual) ** 2)
+        for _, row in period_df.iterrows():
+            year, month = row["date"].year, row["date"].month
+            actual = row["flow_m3s"]
+            if pd.isna(actual): continue
 
-        swarm_result = runner.run(year=year, month=month)
-        swarm_pred = swarm_result["p50"]
-        swarm_errors.append((swarm_pred - actual) ** 2)
+            bl_pred = baseline[baseline["month"] == month]["mean_m3s"].iloc[0]
+            swarm_res = runner.run(year, month)
+            swarm_pred = swarm_res["p50"]
 
-        season = get_season(month)
-        seasonal_data[season]["actual"].append(actual)
-        seasonal_data[season]["swarm"].append(swarm_pred)
+            actuals.append(actual)
+            swarm_preds.append(swarm_pred)
+            baseline_preds.append(bl_pred)
 
-    baseline_rmse = np.sqrt(np.mean(baseline_errors))
-    swarm_rmse = np.sqrt(np.mean(swarm_errors))
-    skill_score = (1 - swarm_rmse / baseline_rmse) * 100
+            season = get_season(month)
+            seasonal_data[season]["actual"].append(actual)
+            seasonal_data[season]["swarm"].append(swarm_pred)
 
-    # Calculate seasonal bias: mean(actual) / mean(swarm)
-    biases = {}
-    for season, vals in seasonal_data.items():
-        if vals["swarm"]:
-            biases[season] = np.mean(vals["actual"]) / np.mean(vals["swarm"])
-        else:
-            biases[season] = np.nan
+        actuals = np.array(actuals)
+        swarm_preds = np.array(swarm_preds)
+        baseline_preds = np.array(baseline_preds)
 
-    result = {
-        "baseline_rmse": float(baseline_rmse),
-        "swarm_rmse": float(swarm_rmse),
-        "skill_score": float(skill_score),
-        "seasonal_biases": biases,
-        "PASS": bool(skill_score >= 5.0)
-    }
+        rmse_bl, rmse_sw, skill = compute_metrics(actuals, swarm_preds, baseline_preds)
 
-    import json
-    print(json.dumps(result, indent=2))
-    return result
+        biases = {}
+        for season, vals in seasonal_data.items():
+            if vals["swarm"] and np.mean(vals["swarm"]) > 0:
+                biases[season] = np.mean(vals["actual"]) / np.mean(vals["swarm"])
+            else:
+                biases[season] = np.nan
+
+        results[period_name] = {
+            "baseline_rmse": float(rmse_bl),
+            "swarm_rmse": float(rmse_sw),
+            "skill_score": float(skill),
+            "biases": biases
+        }
+
+    print("RAW OUTPUT FOR SKILL SCORE:")
+    print(json.dumps(results, indent=2))
+    return results
 
 if __name__ == "__main__":
     compute_skill_score()
