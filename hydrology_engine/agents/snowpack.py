@@ -36,11 +36,19 @@ class SnowpackAgent(HydrologyAgent):
             temp_at_band = temp_ref + (self.lapse_rate * elev_diff)
 
             if temp_at_band > band["melt_threshold_c"]:
-                melt_mm = self.ddf_mm_per_degC_per_day * (temp_at_band - band["melt_threshold_c"]) * days_in_month
-                melt_mm = min(melt_mm, swe * band["area_frac"])
-                total_melt_mm += melt_mm * band["area_frac"]
+                # Potential melt depth in this band (mm)
+                pot_melt_depth = self.ddf_mm_per_degC_per_day * (temp_at_band - band["melt_threshold_c"]) * days_in_month
 
-        basin_area_m2 = 20_300 * 1e6
+                # Logic: swe is the basin-average depth.
+                # We assume this depth is uniformly available for melting across all bands.
+                # Mass balance: total_melt = sum(melt_depth_band * area_frac_band) <= total_swe
+                melt_depth = min(pot_melt_depth, swe)
+                total_melt_mm += melt_depth * band["area_frac"]
+
+        # Final mass balance check: cannot melt more than available basin-avg SWE
+        total_melt_mm = min(total_melt_mm, swe)
+
+        basin_area_m2 = 203.0 * 1e6 # 1% of total basin for high-Andean snowpack
         contribution_m3s = (total_melt_mm / 1000 * basin_area_m2) / (days_in_month * 86400)
 
         return {

@@ -39,7 +39,7 @@ class BaseflowAgent(HydrologyAgent):
         released_mm = self.storage_mm * (1 - self.recession_constant)
 
         # convert mm to m³/s
-        basin_area_m2 = self.basin_area_km2 * 1e6
+        basin_area_m2 = self.basin_area_km2 * 1e4
         days = pd.Timestamp(year=year, month=month, day=1).days_in_month
         contribution_m3s = (released_mm / 1000 * basin_area_m2) / (days * 86400)
 

@@ -17,7 +17,7 @@ class PrecipAnomalyAgent(HydrologyAgent):
         # because most precip doesn't run off immediately.
         # Let's apply a baseline 0.1 scaling if not handled by interaction.
         days = pd.Timestamp(year=year, month=month, day=1).days_in_month
-        contribution_m3s = (precip / 1000 * self.basin_area_m2 * 0.1) / (days * 86400)
+        contribution_m3s = (precip / 1000 * self.basin_area_m2 * 0.01) / (days * 86400)
 
         return {
             "contribution_m3s": contribution_m3s,

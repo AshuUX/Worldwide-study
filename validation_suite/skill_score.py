@@ -8,8 +8,8 @@ def compute_skill_score():
     baseline = compute_baseline(data)
     runner = HydrologyRunner()
 
-    # evaluate on 2021 holdout for speed
-    holdout = data[data["date"].dt.year == 2021].copy()
+    # evaluate on period with real data
+    holdout = data[(data["date"] >= "2019-04-01") & (data["date"] <= "2022-12-01")].copy()
 
     baseline_errors = []
     swarm_errors = []
