@@ -1,0 +1,2 @@
+2026-06-19 11:32:47,590 - ERROR - Failed to fetch DGA data for station 07337002-K: 404 Client Error: Not Found for url: https://dga.mop.gob.cl/BNAConsultas/downloadReporteEstacion?codigoEstacion=07337002-K&tipoMedicion=D&fechaInicio=1960-01-01&fechaFin=2024-12-31
+2026-06-20 03:16:32,375 - ERROR - Failed to fetch DGA data for station 07337002-K: 404 Client Error: Not Found for url: https://dga.mop.gob.cl/BNAConsultas/downloadReporteEstacion?codigoEstacion=07337002-K&tipoMedicion=D&fechaInicio=1960-01-01&fechaFin=2024-12-31
